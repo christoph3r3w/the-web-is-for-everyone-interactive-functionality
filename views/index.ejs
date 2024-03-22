@@ -1,0 +1,123 @@
+<%- include('./partials/head',{title:"RedPers"}); -%>
+
+<%- include('./partials/header'); -%>
+
+
+<main class="homepage_posts">
+	<ul class="latest_articles">
+		<% for (let i = 0; i < 4; i++) { %>
+			<% const post = posts[i]; %>
+			<li>
+				<a href="/posts/<%= post.id %>">
+					<img decoding="async" src="<%= post.yoast_head_json.og_image[0].url %>" alt="" width=100%>
+					<h3><%- post.title.rendered %></h3>
+					<p><%- post.date %></p>
+				</a>
+				<a href="/author/<%= post.author %>">
+					<p><%- post.yoast_head_json.author %></p>
+				</a>
+			</li>
+		<% } %>
+	</ul>
+
+	<ul class="supporters-donation">
+		<li>
+			<h2>redpers bestaat mede dankzij jou</h2>
+			<p><%- categories[4].id %></p>
+			<p><%- categories[4].slug %></p>
+			<button></button>
+		</li>
+		<li>
+			<h2>ook gesteund door:</h2>
+		</li>
+		<li>
+			<img 
+			loading="lazy" 
+			decoding="async" 
+			width=100% 
+		 
+			src="https://redpers.nl/wp-content/uploads/2023/07/Dpg-1024x827.jpg" 
+			class="attachment-large size-large wp-image-100675" alt="" srcset="https://redpers.nl/wp-content/uploads/2023/07/Dpg-1024x827.jpg 1024w, https://redpers.nl/wp-content/uploads/2023/07/Dpg-300x242.jpg 300w, https://redpers.nl/wp-content/uploads/2023/07/Dpg-768x620.jpg 768w, https://redpers.nl/wp-content/uploads/2023/07/Dpg.jpg 1216w" sizes="(max-width: 800px) 100vw, 800px">
+			
+		</li>
+		<li>
+			<img 
+			loading="lazy" 
+			decoding="async" 
+			width=100% 
+			src="https://redpers.nl/wp-content/uploads/2023/05/veronica-1-1.png" 
+			class="attachment-1536x1536 size-1536x1536 wp-image-99822" alt="" srcset="https://redpers.nl/wp-content/uploads/2023/05/veronica-1-1.png 1216w, https://redpers.nl/wp-content/uploads/2023/05/veronica-1-1-300x242.png 300w, https://redpers.nl/wp-content/uploads/2023/05/veronica-1-1-1024x827.png 1024w, https://redpers.nl/wp-content/uploads/2023/05/veronica-1-1-768x620.png 768w" sizes="(max-width: 1216px) 100vw, 1216px">
+			
+		</li>
+	</ul>
+
+	<% for (key in locals.hardcodedCategories) { %>
+<h2><%= key %>: <%= locals.hardcodedCategories[0] %></h2>
+<%	} %>	
+	
+	<div class="categories">
+		<articles class="editor_spick ">
+			<ul>
+			<li>
+				234
+			</li>	
+			</ul>
+			
+			
+		</articles>
+
+		<articles class="binnenland">
+			<ul>
+			
+					
+					
+				
+			</ul>
+			
+		</articles>
+
+		<articles class="buitenland">
+			<ul>
+				<li>
+					432
+					</li>
+			</ul>
+		</articles>
+
+		<articles class="politiek">
+			<ul>
+				<li>3456</li>
+			</ul>
+		</articles>
+
+		<articles class="economie">
+			<ul>
+				<li></li>
+			</ul>
+		</articles>
+
+		<articles class="wetenschap">
+			<ul>
+				<li></li>
+			</ul>
+		</articles>
+
+		<articles class="columns">
+			<ul>
+				<li></li>
+			</ul>
+		</articles>
+
+		<articles class="kunst-media">
+			<ul>
+				<li></li>
+			</ul>
+		</articles>
+	</div>
+</section>
+
+
+
+
+
+<%- include('./partials/foot'); -%>
