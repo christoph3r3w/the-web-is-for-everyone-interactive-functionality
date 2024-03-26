@@ -77,7 +77,7 @@ body {
 }
 
 .categories articles{
-	outline: solid;
+	padding-bottom: 3%;
 	display: flex;
 	
 

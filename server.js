@@ -1,8 +1,10 @@
 // Importeer het npm pakket express uit de node_modules map
 import express from 'express'
 
+
 // Importeer de zelfgemaakte functie fetchJson uit de ./helpers map
 import fetchJson from './helpers/fetch-json.js'
+
 
 // Stel het basis endpoint in
 const apiUrl = 'https://redpers.nl/wp-json/wp/v2';
@@ -22,18 +24,7 @@ app.use(express.static('./public/'))
 
 app.use(express.urlencoded({extended:true}))
 
-// app.locals.hardcodedCategories = {
-//   'binnenland': 9,
-//   'buitenland': 1010,
-//   'column' : 7164,
-//   'economie':6,
-//   'kunst-media':4,
-//   'podcast':3211,
-//   'politiek':63,
-//   'wetenschap':94
-// }
-
-
+app.locals.pageViews = {}
 
 app.locals.hardcodedCategories = {
     'binnenland': 9,
@@ -45,6 +36,10 @@ app.locals.hardcodedCategories = {
     'politiek':63,
     'wetenschap':94
   }
+
+  
+
+
 
   // hardcodedCategories.binnenland
 
@@ -58,30 +53,83 @@ app.get('/', function (request, response) {
   // Haal alle personen uit de WHOIS API op
   const postsUrl = `${apiUrl}/posts?per_page=27`;
   const usersUrl = `${apiUrl}/users`;
-  const categoriesUrl = `${apiUrl}/categories?per_page=100`;
-  
-  let categories = {
-    7164: {title: 'Column', posts: []},
-    9: {title: 'Binnenland', posts: []},
-    6: {title: 'economie',posts:[]},
-    1010: {title: 'buitenland',posts:[]},
-    4: {title: 'kunst-media',posts:[]},
-    3211: {title: 'podcast',posts:[]},
-    63: {title: 'politiek',posts:[]},
-    94: {title: 'wetenschap',posts:[]}
-   
-    
-  }
+  const categoriesUrl = `${apiUrl}/posts?per_page=99&_fields[]=title&_fields[]=categories&_fields[]=id&categories=6&_fields[]=slug&_fields[]=date&_fields[]=yoast_head_json`;
+  // https://redpers.nl/wp-json/wp/v2/posts?per_page=100&_fields[]=title&_fields[]=categories&_fields[]=id
+  // const catArticle = postsUrl
+
  
   // Foreach categories key, fetch the next URL, 
   // https://redpers.nl/wp-json/wp/v2/posts?categories=7164&per_page=3
   // And put the response of that fetch inside categories[...].posts
     // https://redpers.nl/wp-json/wp/v2/posts?categories=9&per_page=3
- 
+
+
   Promise.all([fetchJson(postsUrl), fetchJson(usersUrl),fetchJson(categoriesUrl)])
   .then(([postsData, usersData, categoryData]) => {
+    const categories = [
+      {
+        slug: 'binnenland',
+        id: 9,
+        name: 'Binnenland',
+        posts: []
+      },
+      {
+        slug: 'buitenland',
+        id: 1010,
+        name: 'Buitenland',
+        posts: []
+      },
+      {
+        slug: 'column',
+        id: 7164,
+        name: 'column',
+        posts: []
+      },
+      {
+        slug: 'economie',
+        id: 6,
+        name: 'economie',
+        posts: []
+      },
+      {
+        slug: 'kunst-media',
+        id: 4,
+        name: 'Kunst-media',
+        posts: []
+      },
+      {
+        slug: 'podcast',
+        id: 3211,
+        name: 'Podcast',
+        posts: []
+      },
+      {
+        slug: 'politiek',
+        id: 63,
+        name: 'Politiek',
+        posts: []
+      },
+      {
+        slug: 'wetenschap',
+        id: 94,
+        name: 'Wetenschap',
+        posts: []
+      }
+    ]
       // Render index.ejs and pass the fetched data as 'posts' and 'users' variables
-      response.render('index.ejs', { posts: postsData, users: usersData, categories: categoryData  });
+      // let catA = `${postsData}&categories=${categoryData[0].id}`
+      categories.map(cat => {
+        let count = 0;
+        categoryData.forEach((post => {
+          if (post.categories.includes(cat.id) && count < 3) {
+            count = count + 1
+            cat.posts.push(post)
+          }
+        }))
+        return cat
+      })
+      console.log(categories[3])
+      response.render('index.ejs', { posts: postsData, users: usersData, categories});
       console.log("home success")
   })
 
@@ -106,10 +154,18 @@ app.get('/posts/:id', function (request, response) {
     fetchJson(`${apiUrl}/posts/${postId}`),
     fetchJson(categoriesUrl)
   ]).then(([postData, categoryData]) => {
+
+      if (!app.locals.pageViews[postId]) {
+        app.locals.pageViews[postId] = 1  
+      } else {
+        app.locals.pageViews[postId]++
+      }
+
+      console.log(app.locals.pageViews)
       // Render post.ejs and pass the fetched data as 'post' variable
       response.render('posts.ejs', {
         post: postData,
-        categories: categoryData
+        categories: categoryData,
       });
       console.log("post succes")
   }).catch((error) => {

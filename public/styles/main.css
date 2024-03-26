@@ -61,7 +61,7 @@ header{
 
 	a{
 		color: var(--e-global-color-5d160b2);
-		
+		outline: solid seagreen;
 		:hover{
 			color: var(--e-global-color-accent);
 		}
