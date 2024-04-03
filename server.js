@@ -51,9 +51,9 @@ app.locals.hardcodedCategories = {
 // Maak een GET route voor de index
 app.get('/', function (request, response) {
   // Haal alle personen uit de WHOIS API op
-  const postsUrl = `${apiUrl}/posts?per_page=27`;
+  const postsUrl = `${apiUrl}/posts?per_page=50`;
   const usersUrl = `${apiUrl}/users`;
-  const categoriesUrl = `${apiUrl}/posts?per_page=99&_fields[]=title&_fields[]=categories&_fields[]=id&categories=6&_fields[]=slug&_fields[]=date&_fields[]=yoast_head_json`;
+  const categoriesUrl = `${apiUrl}/posts?per_page=99&_fields[]=title&_fields[]=categories&_fields[]=id&_fields[]=slug&_fields[]=date&_fields[]=yoast_head_json`;
   // https://redpers.nl/wp-json/wp/v2/posts?per_page=100&_fields[]=title&_fields[]=categories&_fields[]=id
   // const catArticle = postsUrl
 
@@ -66,6 +66,7 @@ app.get('/', function (request, response) {
 
   Promise.all([fetchJson(postsUrl), fetchJson(usersUrl),fetchJson(categoriesUrl)])
   .then(([postsData, usersData, categoryData]) => {
+  //  hardcoded catefgory data
     const categories = [
       {
         slug: 'binnenland',
@@ -123,12 +124,26 @@ app.get('/', function (request, response) {
         categoryData.forEach((post => {
           if (post.categories.includes(cat.id) && count < 3) {
             count = count + 1
+            post.title.rendered = post.title.rendered.replace('<b>', '').replace('</b>', '').replace('<b/>', '')
             cat.posts.push(post)
           }
         }))
         return cat
       })
-      console.log(categories[3])
+
+      // copied code for date parsing
+      for (var i=0; i < postsData.length; i++) {
+        const parsedDate = new Date(postsData[i].date), // Haal de string date van de post op
+        day = parsedDate.getDate(), // Haal de dag uit de string
+        options = {month: "short"}, // De maand moet kort geschreven zijn
+        month = Intl.DateTimeFormat("nl-NL", options).format(parsedDate), // Haal de maand op en zet het in woordvorm in de taal nederlands
+        newDate = day + ' ' + month; // Maak een nieuwe datum met "dag maand"
+        postsData[i].title.rendered = postsData[i].title.rendered.replace('<b>', '').replace('</b>', '').replace('<b/>', '')
+        postsData[i].date = newDate // Zet waarde van de datum naar de nieuwe datum
+        categoryData[i].date = newDate
+      }
+
+      // console.log(categories[3])
       response.render('index.ejs', { posts: postsData, users: usersData, categories});
       console.log("home success")
   })
@@ -155,6 +170,7 @@ app.get('/posts/:id', function (request, response) {
     fetchJson(categoriesUrl)
   ]).then(([postData, categoryData]) => {
 
+    // page voews detection
       if (!app.locals.pageViews[postId]) {
         app.locals.pageViews[postId] = 1  
       } else {
@@ -162,6 +178,18 @@ app.get('/posts/:id', function (request, response) {
       }
 
       console.log(app.locals.pageViews)
+      // copied code for date parsing
+      for (var i=0; i < postData.length; i++) {
+              const parsedDate = new Date(postData[i].date), // Haal de string date van de post op
+              day = parsedDate.getDate(), // Haal de dag uit de string
+              options = {month: "short"}, // De maand moet kort geschreven zijn
+              month = Intl.DateTimeFormat("nl-NL", options).format(parsedDate), // Haal de maand op en zet het in woordvorm in de taal nederlands
+              newDate = day + ' ' + month; // Maak een nieuwe datum met "dag maand"
+              postData[i].date = newDate // Zet waarde van de datum naar de nieuwe datum
+              categoryData[i].date = newDate
+      }
+      // 
+     
       // Render post.ejs and pass the fetched data as 'post' variable
       response.render('posts.ejs', {
         post: postData,
@@ -186,7 +214,7 @@ app.get('/author/:id',function(req,res){
     fetchJson(postsUrl),
     fetchJson(usersUrl),
     fetchJson(categoriesUrl),
-    fetchJson(`${apiUrl}/author/${usersUrl}`),
+    // fetchJson(`${apiUrl}/author/${usersUrl}`),
   ])
   .then(([
     postsData,
@@ -194,7 +222,7 @@ app.get('/author/:id',function(req,res){
     categoriesData
   ]) => {
       // Render colofon.ejs and pass the fetched data as 'posts' and 'users' variables
-      //console.log("user", usersData)
+      console.log('author', usersData)
       res.render('author.ejs', { posts: postsData, users: usersData[0], categories: categoriesData });
   })
 
@@ -220,6 +248,20 @@ app.get('/categories/:slug',function(req,res){
     fetchJson(`${apiUrl}/posts?per_page=50&categories=${categoriesData[0].id}`)
     .then((postsData) => {
       // console.log("user", usersData, "posts", postsData)
+
+
+
+      // copied code for date parsing
+      for (var i=0; i < postsData.length; i++) {
+        const parsedDate = new Date(postsData[i].date), // Haal de string date van de post op
+        day = parsedDate.getDate(), // Haal de dag uit de string
+        options = {month: "long"}, // De maand moet kort geschreven zijn
+        month = Intl.DateTimeFormat("nl-NL", options).format(parsedDate), // Haal de maand op en zet het in woordvorm in de taal nederlands
+        year = parsedDate.getFullYear(), // Haal het jaar uit de string
+        newDate = day + ' ' + month + ' ' + year; // Maak een nieuwe datum met "dag maand jaar"        
+        postsData[i].date = newDate // Zet waarde van de datum naar de nieuwe datum
+        
+}
       res.render(
         'categories.ejs', { 
           posts: postsData, 
