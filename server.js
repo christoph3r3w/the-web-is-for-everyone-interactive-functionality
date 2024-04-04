@@ -41,7 +41,7 @@ app.locals.hardcodedCategories = {
 
 
 
-  // hardcodedCategories.binnenland
+// hardcodedCategories.binnenland
 
 // hardcodedCategories[request.params.categorySlug]
 
@@ -286,7 +286,7 @@ app.get('/categories/:slug',function(req,res){
 
 // Maak een POST route 
 
-app.post('/', function (request, response) {
+app.post('/posts/:id', function (request, response) {
   // Er is nog geen afhandeling van POST, redirect naar GET op /
 
   console.log(request.body)
