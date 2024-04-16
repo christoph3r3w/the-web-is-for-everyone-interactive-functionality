@@ -152,7 +152,7 @@ app.get('/', function (request, response) {
     // Handle error if fetching data fails
     console.error('Error fetching data:', error);
     response.status(500).send('Error fetching data');
-});
+  });
 
 })
  
@@ -261,9 +261,8 @@ app.get('/categories/:slug',function(req,res){
         newDate = day + ' ' + month + ' ' + year; // Maak een nieuwe datum met "dag maand jaar"        
         postsData[i].date = newDate // Zet waarde van de datum naar de nieuwe datum
         
-}
-      res.render(
-        'categories.ejs', { 
+      }
+      res.render('categories.ejs', { 
           posts: postsData, 
         });
     })

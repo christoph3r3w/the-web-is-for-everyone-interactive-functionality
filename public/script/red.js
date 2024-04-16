@@ -5,13 +5,13 @@ const appear = document.querySelector(".appear");
 
 menuBtn.addEventListener('click' ,function(e){
 	sidebar.classList.add(appear)
-	console.log('went in')
+	console.log('appear')
 	console.log(e)
 });
 
 menu_exit.addEventListener('click',(e)=>{
 	sidebar.classList.remove(appear)
-	console.log('went out')
+	console.log('diappear')
 	console.log(e)
 });
 
